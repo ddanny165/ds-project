@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/ds-project.iml" filepath="$PROJECT_DIR$/.idea/ds-project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/iot-camera/iot-camera.iml" filepath="$PROJECT_DIR$/iot-camera/iot-camera.iml" />
+    </modules>
+  </component>
+</project>

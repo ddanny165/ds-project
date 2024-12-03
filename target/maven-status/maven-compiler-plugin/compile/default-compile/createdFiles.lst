@@ -1,0 +1,8 @@
+dev/ddanny165/iotCamera/configs/DynamoDBConfig.class
+dev/ddanny165/iotCamera/models/VideoPartFrame.class
+dev/ddanny165/iotCamera/services/VideoPartFrameDynamoDBService.class
+dev/ddanny165/iotCamera/mappers/VideoPartFrameDeserializer.class
+dev/ddanny165/iotCamera/Main.class
+dev/ddanny165/iotCamera/configs/SecurityConfig.class
+dev/ddanny165/iotCamera/mappers/VideoPartFrameSerializer.class
+dev/ddanny165/iotCamera/rest/controllers/CameraController.class

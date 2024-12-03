@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.bytedeco:tesseract-platform:5.5.0-1.5.11">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/tesseract-platform/5.5.0-1.5.11/tesseract-platform-5.5.0-1.5.11.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/tesseract-platform/5.5.0-1.5.11/tesseract-platform-5.5.0-1.5.11-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/tesseract-platform/5.5.0-1.5.11/tesseract-platform-5.5.0-1.5.11-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

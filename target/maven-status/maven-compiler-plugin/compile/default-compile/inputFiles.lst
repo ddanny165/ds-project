@@ -1,0 +1,8 @@
+/Users/danylomoskaliuk/Desktop/ds-project/src/main/java/dev/ddanny165/iotCamera/Main.java
+/Users/danylomoskaliuk/Desktop/ds-project/src/main/java/dev/ddanny165/iotCamera/configs/DynamoDBConfig.java
+/Users/danylomoskaliuk/Desktop/ds-project/src/main/java/dev/ddanny165/iotCamera/configs/SecurityConfig.java
+/Users/danylomoskaliuk/Desktop/ds-project/src/main/java/dev/ddanny165/iotCamera/mappers/VideoPartFrameDeserializer.java
+/Users/danylomoskaliuk/Desktop/ds-project/src/main/java/dev/ddanny165/iotCamera/mappers/VideoPartFrameSerializer.java
+/Users/danylomoskaliuk/Desktop/ds-project/src/main/java/dev/ddanny165/iotCamera/models/VideoPartFrame.java
+/Users/danylomoskaliuk/Desktop/ds-project/src/main/java/dev/ddanny165/iotCamera/rest/controllers/CameraController.java
+/Users/danylomoskaliuk/Desktop/ds-project/src/main/java/dev/ddanny165/iotCamera/services/VideoPartFrameDynamoDBService.java

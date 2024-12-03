@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.bytedeco:ffmpeg:android-x86_64:7.1-1.5.11">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/ffmpeg/7.1-1.5.11/ffmpeg-7.1-1.5.11-android-x86_64.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/ffmpeg/7.1-1.5.11/ffmpeg-7.1-1.5.11-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/bytedeco/ffmpeg/7.1-1.5.11/ffmpeg-7.1-1.5.11-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
