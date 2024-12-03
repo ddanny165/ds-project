@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>dev.ddanny165</groupId>
-	<artifactId>task_management</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>task_management</name>
-	<description>Pet project of a simple task management system implemented for educational purposes.</description>
+	<artifactId>IOTCameras</artifactId>
+	<version>0.0.1</version>
+	<name>IOTCameras</name>
+	<description>Emulation of IOT Cameras.</description>
 	<url/>
 	<licenses>
 		<license/>
