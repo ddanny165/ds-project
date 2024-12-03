@@ -2,16 +2,11 @@ package dev.ddanny165.iotCamera.services;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.api.PutItemApi;
-import com.amazonaws.services.dynamodbv2.document.internal.PutItemImpl;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
+import dev.ddanny165.iotCamera.exceptions.DynamoDbServiceException;
 import dev.ddanny165.iotCamera.mappers.VideoPartFrameDeserializer;
 import dev.ddanny165.iotCamera.mappers.VideoPartFrameSerializer;
 import dev.ddanny165.iotCamera.models.VideoPartFrame;
@@ -32,7 +27,7 @@ public class VideoPartFrameDynamoDBService {
         this.tableName = "CameraAccesses";
     }
 
-    public void saveFrame(Integer cameraId, VideoPartFrame frame) {
+    public void saveFrame(Integer cameraId, VideoPartFrame frame) throws DynamoDbServiceException {
         try {
             String jsonFrame = VideoPartFrameSerializer.toJson(frame);
             Map<String, AttributeValue> itemValues = new HashMap<>();
@@ -49,18 +44,18 @@ public class VideoPartFrameDynamoDBService {
             try {
                 ddb.putItem(request);
             } catch (ResourceNotFoundException e) {
-                System.err.format("Error: The table \"%s\" can't be found.\n", this.tableName);
-                System.err.println("Be sure that it exists and that you've typed its name correctly!");
-                System.exit(1);
+                throw new DynamoDbServiceException(String.format("Error: The table \"%s\" can't be found.\n",
+                        this.tableName),e);
             } catch (AmazonServiceException e) {
                 System.err.println(e.getMessage());
+                throw new DynamoDbServiceException(e.getMessage(), e);
             }
         } catch (Exception e) {
-            System.err.println("Error upon marshalling the videopartframe occured");
+            throw new DynamoDbServiceException("Error upon marshalling the VideoPartFrame object occurred", e);
         }
     }
 
-    public Optional<VideoPartFrame> getFrame(Integer cameraId) {
+    public Optional<VideoPartFrame> getFrame(Integer cameraId) throws DynamoDbServiceException {
         AttributeValue keyAtrValue = new AttributeValue();
         keyAtrValue.setN(cameraId.toString());
 
@@ -77,16 +72,9 @@ public class VideoPartFrameDynamoDBService {
 
         try {
             VideoPartFrame videoPartFrame = VideoPartFrameDeserializer.fromJson(item.get("frameData").getS());
-//            if (videoPartFrame.accessedAt() == null) {
-//                return Optional.of(new VideoPartFrame(videoPartFrame.nextVideoPart(),
-//                        videoPartFrame.nextFrameToUse(),
-//                        Optional.empty()));
-//            }
-
             return Optional.of(videoPartFrame);
         } catch (Exception e) {
-            System.err.println("Error occurred upon unmarshalling the videoPartFrame object");
-            return Optional.empty();
+            throw new DynamoDbServiceException("Error upon unmarshalling the VideoPartFrame object occurred", e);
         }
     }
 }
