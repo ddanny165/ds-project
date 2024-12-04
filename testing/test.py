@@ -3,7 +3,7 @@ from PIL import Image
 from io import BytesIO
 
 # API endpoint
-url = "http://localhost:8080/api/camera/5/frame"
+url = "http://IOTCamerasLB-1851832363.us-east-1.elb.amazonaws.com:80/api/camera/2/frame"
 
 # Fetch the image as bytes
 response = requests.get(url)
