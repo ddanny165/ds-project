@@ -27,23 +27,11 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class CameraService {
-    private static final String BUCKET_NAME = "camera-videos-bucket-ds";
-    // Folder in S3 bucket
-    private static final String VIDEO_FOLDER = "edited-videos/output";
-    private final Cache<String, File> videoCache;
 
     private final Integer numberOfCameras;
-    private final S3Client s3Client;
     private final VideoPartFrameDynamoDBService videoPartFrameDynamoDBService;
 
     public CameraService(VideoPartFrameDynamoDBService videoPartFrameDynamoDBService, S3Client s3Client) {
-        this.videoCache = Caffeine.newBuilder()
-                .maximumSize(5)
-                .expireAfterAccess(30, TimeUnit.MINUTES)
-                .build();
-
-        this.s3Client = s3Client;
-
         this.videoPartFrameDynamoDBService = videoPartFrameDynamoDBService;
         this.numberOfCameras = 5;
 
@@ -70,13 +58,14 @@ public class CameraService {
         VideoPartFrame videoPartFrame = videoPartFrameOpt.get();
 
         Integer nextVideoFrameToUse = videoPartFrame.nextFrameToUse();
-        Integer nextVideoPartToUse = videoPartFrame.nextVideoPart();
 
-        // Fetch or load video into cache
-        String videoKey = buildVideoKeyString(nextVideoPartToUse, cameraId);
-        File videoFile = videoCache.get(videoKey, key -> downloadVideoFromS3(key));
+        String videoFilePath = buildVideoKeyString(cameraId);
+        File videoFile = new File(videoFilePath);
 
-        boolean isVideoPartChanged = false;
+        if (!videoFile.exists()) {
+            System.err.println("ERROR: Video file not found at path: " + videoFilePath);
+        }
+
         if (videoPartFrame.accessedAt().isPresent()) {
             try (FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(videoFile)) {
                 grabber.start();
@@ -87,23 +76,12 @@ public class CameraService {
 
                 nextVideoFrameToUse += frameOffset;
                 if (nextVideoFrameToUse >= grabber.getLengthInFrames()) {
-                    // then we start with the next part of the video from the camera
+                    // then we start with the beginning of the same video again
                     nextVideoFrameToUse = 0;
-                    if (nextVideoPartToUse == 11) {
-                        nextVideoPartToUse = 1;
-                    } else {
-                        nextVideoPartToUse++;
-                    }
-
-                    isVideoPartChanged = true;
                 }
-                videoPartFrameDynamoDBService.saveFrame(cameraId, new VideoPartFrame(nextVideoPartToUse, nextVideoFrameToUse, Optional.of(accessedAt)));
-            }
-        }
 
-        if (isVideoPartChanged) {
-            String newVideoKey = buildVideoKeyString(nextVideoPartToUse, cameraId);
-            videoFile = videoCache.get(newVideoKey, key -> downloadVideoFromS3(key));
+                videoPartFrameDynamoDBService.saveFrame(cameraId, new VideoPartFrame(nextVideoFrameToUse, Optional.of(accessedAt)));
+            }
         }
 
         try (FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(videoFile)) {
@@ -112,45 +90,20 @@ public class CameraService {
             Frame frame = grabber.grabImage();
 
             BufferedImage bufferedImage = new Java2DFrameConverter().convert(frame);
-            videoPartFrameDynamoDBService.saveFrame(cameraId, new VideoPartFrame(nextVideoPartToUse, ++nextVideoFrameToUse, Optional.of(accessedAt)));
+            videoPartFrameDynamoDBService.saveFrame(cameraId, new VideoPartFrame(++nextVideoFrameToUse, Optional.of(accessedAt)));
             return convertImageToBytes(bufferedImage);
         }
     }
 
-    private String buildVideoKeyString(Integer nextVideoPartToUse, Integer cameraId) {
-        StringBuilder videoKeyBuilder = new StringBuilder(VIDEO_FOLDER);
-        videoKeyBuilder.append("/video");
-        videoKeyBuilder.append(nextVideoPartToUse);
-        videoKeyBuilder.append("_");
+    private String buildVideoKeyString(Integer cameraId) {
+        StringBuilder videoKeyBuilder = new StringBuilder();
+        videoKeyBuilder.append("videos");
+        videoKeyBuilder.append("/camera");
         videoKeyBuilder.append(cameraId);
         videoKeyBuilder.append(".mp4");
 
         return videoKeyBuilder.toString();
     }
-
-    private File downloadVideoFromS3(String key) {
-        try {
-            Path tempFilePath = Files.createTempFile("camera-video-", ".mp4");
-            File tempFile = tempFilePath.toFile();
-            if (tempFile.exists()) {
-                tempFile.delete();
-            }
-
-            // Download video from S3 to the temporary file
-            s3Client.getObject(
-                    GetObjectRequest.builder()
-                            .bucket(BUCKET_NAME)
-                            .key(key)
-                            .build(),
-                    tempFilePath
-            );
-
-            return tempFile;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to download video from S3: " + key, e);
-        }
-    }
-
 
     // Convert BufferedImage to byte array
     private byte[] convertImageToBytes(BufferedImage image) throws IOException {

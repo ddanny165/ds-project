@@ -10,6 +10,7 @@ import dev.ddanny165.iotCamera.exceptions.DynamoDbServiceException;
 import dev.ddanny165.iotCamera.mappers.VideoPartFrameDeserializer;
 import dev.ddanny165.iotCamera.mappers.VideoPartFrameSerializer;
 import dev.ddanny165.iotCamera.models.VideoPartFrame;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,11 +21,12 @@ import java.util.Optional;
 public class VideoPartFrameDynamoDBService {
 
     private final AmazonDynamoDB ddb;
-    private final String tableName;
+
+    @Value("${DB_TABLE_NAME}")
+    private String tableName;
 
     public VideoPartFrameDynamoDBService(AmazonDynamoDB ddb) {
         this.ddb = ddb;
-        this.tableName = "CameraAccesses";
     }
 
     public void saveFrame(Integer cameraId, VideoPartFrame frame) throws DynamoDbServiceException {
