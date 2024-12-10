@@ -14,7 +14,7 @@ provider "aws" {
 resource "aws_vpc" "iot-surv-vpc" {
     cidr_block = "10.0.0.0/16"
     tags = {
-      Name = "iot-surveillance-system"
+      Name = "iot-surv-system"
     }
 }
 
@@ -129,6 +129,31 @@ resource "aws_lb_listener" "ecs_alb_listener" {
 
 resource "aws_ecs_cluster" "iot-cameras-cluster" {
   name = "iot-cameras-cluster"
+}
+
+resource "aws_dynamodb_table" "camera_accesses" {
+  name         = "CameraAccesses"
+  billing_mode = "PAY_PER_REQUEST" 
+
+  attribute {
+    name = "cameraID"
+    type = "N"  # Number type for the partition key
+  }
+
+  hash_key = "cameraID"
+
+  tags = {
+    Name        = "CameraAccesses"
+    Environment = "production"
+  }
+}
+
+resource "null_resource" "run_script" {
+  provisioner "local-exec" {
+    command = "./insert_data.sh"
+  }
+
+  depends_on = [aws_dynamodb_table.camera_accesses]
 }
 
 resource "aws_ecs_task_definition" "iot-camera" {
