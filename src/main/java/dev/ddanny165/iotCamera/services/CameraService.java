@@ -1,29 +1,21 @@
 package dev.ddanny165.iotCamera.services;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import dev.ddanny165.iotCamera.exceptions.DynamoDbServiceException;
 import dev.ddanny165.iotCamera.models.VideoPartFrame;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class CameraService {
@@ -97,7 +89,7 @@ public class CameraService {
 
     private String buildVideoKeyString(Integer cameraId) {
         StringBuilder videoKeyBuilder = new StringBuilder();
-        videoKeyBuilder.append("videos");
+        videoKeyBuilder.append("/app/videos");
         videoKeyBuilder.append("/camera");
         videoKeyBuilder.append(cameraId);
         videoKeyBuilder.append(".mp4");
